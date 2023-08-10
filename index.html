@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+  <div class="app-wrap">
+    <!-- Navigation bar -->
+    <nav class="navbar">
+      <div class="nav-logo">WeatherApp</div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Forecast</a></li>
+        <li><a href="#">About</a></li>
+        <!-- Add more links as needed -->
+      </ul>
+    </nav>
+    <!-- Main content -->
+    <div class="main-content">
+      <header>
+        <input type="text" autocomplete="off" class="search-box" placeholder="Search for a city..." />
+      </header>
+      <main>
+        <section class="location">
+          <div class="city">Toronto, Canada</div>
+          <div class="date">Thursday 10 August 2023</div>
+        </section>
+        <div class="current">
+          <div class="temp">15<span>°c</span></div>
+          <div class="weather">Sunny</div>
+          <div class="hi-low">13°c / 16°c</div>
+        </div>
+      </main>
+    </div>
+    
+    <!-- How Weather API Works -->
+    <div class="weather-api-info">
+      <h2>How Weather API Works</h2>
+      <p>A Weather API (Application Programming Interface) allows your web application to fetch real-time weather data from a remote server. Here's how it works:</p>
+      <ol>
+        <li>Your application sends a request to the Weather API's URL, specifying the location for which you want weather information.</li>
+        <li>The Weather API processes the request and queries its data sources for the latest weather data for the specified location.</li>
+        <li>The API then packages the weather data (such as temperature, humidity, wind speed, etc.) into a structured format, typically JSON or XML.</li>
+        <li>The structured data is sent back as the API's response to your application's request.</li>
+        <li>Your application receives the weather data and can parse it to display relevant information to users.</li>
+      </ol>
+      <p>By integrating a Weather API into your application, you can provide users with accurate and up-to-date weather forecasts and conditions for various locations around the world.</p>
+    </div>
+    
+    <!-- Footer -->
+    
+    <footer class="footer">
+      <p class="creator">Taranjeet Singh &copy; 2023</p>
+    </footer>
+  </div>
+  <script src="main.js"></script>
+  <script>
+    const api = {
+      key: "da332e2e54af0b66bf93eac05e74fc49",
+      base: "http://api.openweathermap.org/data/2.5/weather?APPID=da332e2e54af0b66bf93eac05e74fc49"
+    }
+
+    const searchbox = document.querySelector('.search-box');
+    searchbox.addEventListener('keypress', setQuery);
+
+    function setQuery(evt) {
+      if (evt.keyCode == 13) {
+        getResults(searchbox.value);
+      }
+    }
+
+    function getResults(query) {
+      fetch(`${api.base}&q=${query}&units=metric`)
+        .then(weather => {
+          return weather.json();
+        }).then(displayResults);
+    }
+
+    function displayResults(weather) {
+      let city = document.querySelector('.location .city');
+      city.innerText = `${weather.name}, ${weather.sys.country}`;
+
+      let now = new Date();
+      let date = document.querySelector('.location .date');
+      date.innerText = dateBuilder(now);
+
+      let temp = document.querySelector('.current .temp');
+      temp.innerHTML = `${Math.round(weather.main.temp)}<span>°c</span>`;
+
+      let weather_el = document.querySelector('.current .weather');
+      weather_el.innerText = weather.weather[0].main;
+
+      let hilow = document.querySelector('.hi-low');
+      hilow.innerText = `${Math.round(weather.main.temp_min)}°c / ${Math.round(weather.main.temp_max)}°c`;
+    }
+
+    function dateBuilder(d) {
+      let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+      let day = days[d.getDay()];
+      let date = d.getDate();
+      let month = months[d.getMonth()];
+      let year = d.getFullYear();
+
+      return `${day} ${date} ${month} ${year}`;
+    }
+  </script>
+</body>
+</html>
